@@ -17,7 +17,6 @@ import {
   Target,
   ArrowRight,
   MapPin,
-  Profile,
   Mail,
   Send,
   Bell,
@@ -192,31 +191,9 @@ export default function App() {
   const [scrolled, setScrolled] = useState(false);
   const [activeTab, setActiveTab] = useState("home");
   const [currentMember, setCurrentMember] = useState(0);
-  const [user, setUser] = useState(null);
   const [profileOpen, setProfileOpen] = useState(false);
   const [prokerIndex, setProkerIndex] = useState(0);
-  const prokerSliderRef = useRef(null);
-  const prevMember = () =>
-    setCurrentMember((prev) => (prev - 1 + TEAM.length) % TEAM.length);
-  const nextMember = () => setCurrentMember((prev) => (prev + 1) % TEAM.length);
-  // Proker Slider Logic
-  // Proker Slider Logic
-  const nextProker = () => {
-    if (prokerSliderRef.current) {
-      const cardWidth = prokerSliderRef.current.offsetWidth;
-      prokerSliderRef.current.scrollBy({ left: cardWidth, behavior: "smooth" });
-    }
-  };
-
-  const prevProker = () => {
-    if (prokerSliderRef.current) {
-      const cardWidth = prokerSliderRef.current.offsetWidth;
-      prokerSliderRef.current.scrollBy({
-        left: -cardWidth,
-        behavior: "smooth",
-      });
-    }
-  };
+  const prokerSliderRef = React.useRef<HTMLDivElement | null>(null);
   // State untuk Toko
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
@@ -227,6 +204,32 @@ export default function App() {
     quantity: 1,
     proof: null as File | null,
   });
+  const nextProker = () => {
+    const el = prokerSliderRef.current;
+    if (!el) return;
+
+    const cardWidth = el.offsetWidth;
+    el.scrollBy({ left: cardWidth, behavior: "smooth" });
+  };
+  type User = {
+    full_name: string;
+    role?: string;
+  };
+
+  const [user, setUser] = useState<User | null>(null);
+  const prevMember = () =>
+    setCurrentMember((prev) => (prev - 1 + TEAM.length) % TEAM.length);
+  const nextMember = () => setCurrentMember((prev) => (prev + 1) % TEAM.length);
+
+  const prevProker = () => {
+    if (prokerSliderRef.current) {
+      const cardWidth = prokerSliderRef.current.offsetWidth;
+      prokerSliderRef.current.scrollBy({
+        left: -cardWidth,
+        behavior: "smooth",
+      });
+    }
+  };
 
   // Handle scroll for Desktop Header & Reveal animations
   useEffect(() => {
@@ -345,7 +348,7 @@ export default function App() {
 
   // Close dropdown when clicking outside
   useEffect(() => {
-    const handleClickOutside = (e) => {
+    const handleClickOutside = (e: any) => {
       if (!e.target.closest("[data-profile]")) {
         setProfileOpen(false);
       }
@@ -478,8 +481,7 @@ export default function App() {
 
                 {/* Dropdown Menu */}
                 {profileOpen && (
-                  <div className="absolute right-0 mt-2 w-52 bg-white rounded-2xl shadow-xl border border-slate-100 py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-200">
-                    {/* User Info Header */}
+                  <div className="absolute right-0 mt-2 w-52 bg-white rounded-2xl shadow-xl border border-slate-100 py-2 z-50">
                     <div className="px-4 py-3 border-b border-slate-100">
                       <p className="font-bold text-sm text-slate-800 truncate">
                         {user?.full_name || "Pengurus FOBI"}
@@ -489,31 +491,29 @@ export default function App() {
                       </p>
                     </div>
 
-                    {/* Menu Items */}
                     <a
                       href="/user/dashboard"
-                      className="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition-colors"
+                      className="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-700 hover:bg-blue-50"
                       onClick={() => setProfileOpen(false)}
                     >
                       <LayoutDashboard size={16} />
                       Dashboard
                     </a>
+
                     <a
                       href="/dashboard?tab=settings"
-                      className="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition-colors"
+                      className="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-700 hover:bg-blue-50"
                       onClick={() => setProfileOpen(false)}
                     >
                       <Settings size={16} />
                       Pengaturan
                     </a>
 
-                    {/* Divider */}
                     <div className="my-2 border-t border-slate-100" />
 
-                    {/* Logout */}
                     <button
                       onClick={handleLogout}
-                      className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-slate-700 transition-colors"
+                      className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50"
                     >
                       <LogOut size={16} />
                       Keluar
