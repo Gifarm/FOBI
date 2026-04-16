@@ -22,11 +22,11 @@ export default function App() {
     confirmPassword: "",
   });
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (formData.password !== formData.confirmPassword) {
@@ -53,7 +53,7 @@ export default function App() {
       setTimeout(() => {
         window.location.href = `/verify-otp?email=${formData.email}`;
       }, 1500);
-    } catch (error) {
+    } catch (error: any) {
       toast.dismiss(loadingToast);
 
       const message =

@@ -10,8 +10,7 @@ export default function App() {
     password: "",
     rememberMe: false,
   });
-
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
     setFormData({
       ...formData,
@@ -19,7 +18,7 @@ export default function App() {
     });
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const loadingToast = toast.loading("Sedang login...");
@@ -53,7 +52,7 @@ export default function App() {
       setTimeout(() => {
         window.location.href = "/user/dashboard";
       }, 1200);
-    } catch (error) {
+    } catch (error: any) {
       toast.dismiss(loadingToast);
 
       const message =

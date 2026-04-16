@@ -12,20 +12,19 @@ export default function VerifyOTP() {
 
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
 
-  const handleChange = (value, index) => {
+  const handleChange = (value: string, index: number) => {
     if (!/^\d*$/.test(value)) return;
 
     const newOtp = [...otp];
     newOtp[index] = value;
     setOtp(newOtp);
 
-    // auto focus next
     if (value && index < 5) {
-      document.getElementById(`otp-${index + 1}`).focus();
+      document.getElementById(`otp-${index + 1}`)?.focus();
     }
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const code = otp.join("");
@@ -42,7 +41,7 @@ export default function VerifyOTP() {
         "https://hmcf55cz-5000.asse.devtunnels.ms/api/auth/verify-email",
         {
           email,
-          token: code, // ✅ FIX DI SINI
+          token: code,
         },
       );
 
@@ -52,11 +51,12 @@ export default function VerifyOTP() {
       setTimeout(() => {
         window.location.href = "/login";
       }, 1500);
-    } catch (error) {
+    } catch (error: unknown) {
+      const err = error as any;
+
       toast.dismiss(loading);
 
-      const message =
-        error.response?.data?.message || "Kode OTP salah / expired";
+      const message = err.response?.data?.message || "Kode OTP salah / expired";
 
       toast.error(message);
     }
@@ -83,7 +83,7 @@ export default function VerifyOTP() {
                 key={index}
                 id={`otp-${index}`}
                 type="text"
-                maxLength="1"
+                maxLength={1}
                 value={digit}
                 onChange={(e) => handleChange(e.target.value, index)}
                 className="w-12 h-14 text-center text-xl font-bold border rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none"
