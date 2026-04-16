@@ -22,8 +22,12 @@ import toast from "react-hot-toast";
 export default function SideBar() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [user, setUser] = useState(null);
-
+  const [user, setUser] = useState<User | null>(null);
+  type User = {
+    full_name?: string;
+    role?: string;
+    name?: string;
+  };
   const router = useRouter(); // ✅ Inisialisasi router
   const pathname = usePathname(); // ✅ Untuk sinkronisasi active menu dengan URL
 
@@ -78,7 +82,7 @@ export default function SideBar() {
   ];
 
   // Handle navigation - ✅ Fungsi navigasi terpisah
-  const handleNavigation = (path) => {
+  const handleNavigation = (path: string) => {
     router.push(path);
     setMobileMenuOpen(false); // Tutup mobile menu setelah navigasi
   };
