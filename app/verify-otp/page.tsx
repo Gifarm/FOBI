@@ -1,12 +1,13 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, Suspense } from "react";
 import axios from "axios";
 import { useSearchParams } from "next/navigation";
 import toast, { Toaster } from "react-hot-toast";
 import { ArrowRight } from "lucide-react";
-export const dynamic = "force-dynamic";
-export default function VerifyOTP() {
+
+// Komponen utama yang menggunakan useSearchParams
+function VerifyOTPContent() {
   const searchParams = useSearchParams();
   const email = searchParams.get("email");
 
@@ -105,5 +106,34 @@ export default function VerifyOTP() {
         </p>
       </div>
     </div>
+  );
+}
+
+// Fallback component saat loading
+function VerifyOTPLoading() {
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-[#f8fafc] p-6">
+      <div className="bg-white rounded-3xl shadow-xl p-8 w-full max-w-md text-center">
+        <div className="animate-pulse space-y-4">
+          <div className="h-8 bg-slate-200 rounded w-3/4 mx-auto"></div>
+          <div className="h-4 bg-slate-200 rounded w-1/2 mx-auto"></div>
+          <div className="flex justify-center gap-2">
+            {[...Array(6)].map((_, i) => (
+              <div key={i} className="w-12 h-14 bg-slate-200 rounded-xl"></div>
+            ))}
+          </div>
+          <div className="h-12 bg-slate-200 rounded-xl"></div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Export default dengan Suspense boundary
+export default function VerifyOTP() {
+  return (
+    <Suspense fallback={<VerifyOTPLoading />}>
+      <VerifyOTPContent />
+    </Suspense>
   );
 }
