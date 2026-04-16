@@ -5,7 +5,7 @@ import axios from "axios";
 import { useSearchParams } from "next/navigation";
 import toast, { Toaster } from "react-hot-toast";
 import { ArrowRight } from "lucide-react";
-
+export const dynamic = "force-dynamic";
 export default function VerifyOTP() {
   const searchParams = useSearchParams();
   const email = searchParams.get("email");
