@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, Profiler } from "react";
 import {
   Home,
   Info,
@@ -10,9 +10,14 @@ import {
   Sparkles,
   Music2,
   ChevronRight,
+  ChevronDown,
+  LayoutDashboard,
+  Settings,
+  LogOut,
   Target,
   ArrowRight,
   MapPin,
+  Profile,
   Mail,
   Send,
   Bell,
@@ -24,6 +29,7 @@ import {
   CheckCircle2,
   QrCode,
   Users,
+  User,
   ChevronLeft,
 } from "lucide-react";
 
@@ -59,7 +65,7 @@ const socialLinks = [
         <path d="M320.3 205C256.8 204.8 205.2 256.2 205 319.7C204.8 383.2 256.2 434.8 319.7 435C383.2 435.2 434.8 383.8 435 320.3C435.2 256.8 383.8 205.2 320.3 205zM319.7 245.4C360.9 245.2 394.4 278.5 394.6 319.7C394.8 360.9 361.5 394.4 320.3 394.6C279.1 394.8 245.6 361.5 245.4 320.3C245.2 279.1 278.5 245.6 319.7 245.4zM413.1 200.3C413.1 185.5 425.1 173.5 439.9 173.5C454.7 173.5 466.7 185.5 466.7 200.3C466.7 215.1 454.7 227.1 439.9 227.1C425.1 227.1 413.1 215.1 413.1 200.3zM542.8 227.5C541.1 191.6 532.9 159.8 506.6 133.6C480.4 107.4 448.6 99.2 412.7 97.4C375.7 95.3 264.8 95.3 227.8 97.4C192 99.1 160.2 107.3 133.9 133.5C107.6 159.7 99.5 191.5 97.7 227.4C95.6 264.4 95.6 375.3 97.7 412.3C99.4 448.2 107.6 480 133.9 506.2C160.2 532.4 191.9 540.6 227.8 542.4C264.8 544.5 375.7 544.5 412.7 542.4C448.6 540.7 480.4 532.5 506.6 506.2C532.8 480 541 448.2 542.8 412.3C544.9 375.3 544.9 264.5 542.8 227.5zM495 452C487.2 471.6 472.1 486.7 452.4 494.6C422.9 506.3 352.9 503.6 320.3 503.6C287.7 503.6 217.6 506.2 188.2 494.6C168.6 486.8 153.5 471.7 145.6 452C133.9 422.5 136.6 352.5 136.6 319.9C136.6 287.3 134 217.2 145.6 187.8C153.4 168.2 168.5 153.1 188.2 145.2C217.7 133.5 287.7 136.2 320.3 136.2C352.9 136.2 423 133.6 452.4 145.2C472 153 487.1 168.1 495 187.8C506.7 217.3 504 287.3 504 319.9C504 352.5 506.7 422.6 495 452z" />
       </svg>
     ),
-    href: "https://instagram.com/forumosis_kotabanjar",
+    href: "https://instagram.com/forumosisbanjar.id",
     color: "hover:bg-pink-600",
   },
   {
@@ -69,7 +75,7 @@ const socialLinks = [
         <path d="M544.5 273.9C500.5 274 457.5 260.3 421.7 234.7L421.7 413.4C421.7 446.5 411.6 478.8 392.7 506C373.8 533.2 347.1 554 316.1 565.6C285.1 577.2 251.3 579.1 219.2 570.9C187.1 562.7 158.3 545 136.5 520.1C114.7 495.2 101.2 464.1 97.5 431.2C93.8 398.3 100.4 365.1 116.1 336C131.8 306.9 156.1 283.3 185.7 268.3C215.3 253.3 248.6 247.8 281.4 252.3L281.4 342.2C266.4 337.5 250.3 337.6 235.4 342.6C220.5 347.6 207.5 357.2 198.4 369.9C189.3 382.6 184.4 398 184.5 413.8C184.6 429.6 189.7 444.8 199 457.5C208.3 470.2 221.4 479.6 236.4 484.4C251.4 489.2 267.5 489.2 282.4 484.3C297.3 479.4 310.4 469.9 319.6 457.2C328.8 444.5 333.8 429.1 333.8 413.4L333.8 64L421.8 64C421.7 71.4 422.4 78.9 423.7 86.2C426.8 102.5 433.1 118.1 442.4 131.9C451.7 145.7 463.7 157.5 477.6 166.5C497.5 179.6 520.8 186.6 544.6 186.6L544.6 274z" />
       </svg>
     ),
-    href: "https://tiktok.com/@fobi.banjar",
+    href: "https://tiktok.com/@forumosisbanjaridaman.id",
     color: "hover:bg-white",
   },
   {
@@ -79,8 +85,67 @@ const socialLinks = [
         <path d="M581.7 188.1C575.5 164.4 556.9 145.8 533.4 139.5C490.9 128 320.1 128 320.1 128C320.1 128 149.3 128 106.7 139.5C83.2 145.8 64.7 164.4 58.4 188.1C47 231 47 320.4 47 320.4C47 320.4 47 409.8 58.4 452.7C64.7 476.3 83.2 494.2 106.7 500.5C149.3 512 320.1 512 320.1 512C320.1 512 490.9 512 533.5 500.5C557 494.2 575.5 476.3 581.8 452.7C593.2 409.8 593.2 320.4 593.2 320.4C593.2 320.4 593.2 231 581.8 188.1zM264.2 401.6L264.2 239.2L406.9 320.4L264.2 401.6z" />
       </svg>
     ),
-    href: "https://youtube.com/@fobimedia",
+    href: "https://youtube.com/@forumosisbanjar",
     color: "hover:bg-red-600",
+  },
+];
+// Mock Data Proker (untuk Slider)
+const PROKER_DATA = [
+  {
+    title: "GATHPOS",
+    tag: "Learning Center",
+    deskripsi:
+      "Inti Acara: Sebuah ajang pertemuan strategis yang dirancang khusus untuk seluruh pengurus OSIS aktif se-Kota Banjar. Fokus Utama: Memperkuat jaringan kerja sama (kolaborasi) dan mempererat hubungan personal antar organisasi siswa.",
+    color: "bg-green-400",
+    img: "DSC02313.JPG",
+  },
+  {
+    title: "FRAME",
+    tag: "Media Center",
+    deskripsi:
+      "FRAME adalah festival media dan seni kreatif tahunan yang diselenggarakan untuk menampilkan dan mengapresiasi karya-karya terbaik yang dihasilkan oleh pelajar di seluruh Kota Banjar.",
+    color: "bg-blue-400",
+    img: "DSC02740.JPG",
+  },
+  {
+    title: "GAPURA",
+    tag: "Social Center",
+    deskripsi:
+      "Program pengabdian sosial yang dirancang seperti Kuliah Kerja Nyata (KKN) skala mini untuk memberikan dampak positif langsung kepada masyarakat.",
+    color: "bg-yellow-400",
+    img: "DSC02313.JPG",
+  },
+  {
+    title: "FOBI GOES TO SCHOOL",
+    tag: "Education",
+    deskripsi:
+      "Kunjungan rutin ke sekolah-sekolah untuk memberikan sosialisasi kepemimpinan dan pengenalan forum kepada siswa baru.",
+    color: "bg-purple-400",
+    img: "DSC02375.JPG",
+  },
+];
+
+// Mock Data Kegiatan Sedang Dilaksanakan
+const CURRENT_EVENTS = [
+  {
+    id: 1,
+    name: "Pendaftaran Pengurus FOBI 2024",
+    price: "Gratis",
+    date: "12 - 20 Mei 2024",
+    location: "Online / SMAN 1 Banjar",
+    description:
+      "Kesempatan emas untuk bergabung dalam organisasi pelajar terbesar di Kota Banjar. Jadilah bagian dari perubahan!",
+    img: "DSC02375.JPG",
+  },
+  {
+    id: 2,
+    name: "Workshop Digital Kreatif",
+    price: "Rp 15.000",
+    date: "25 Mei 2024",
+    location: "Aula Disdik Kota Banjar",
+    description:
+      "Belajar desain grafis dan manajemen media sosial khusus untuk pengurus OSIS.",
+    img: "DSC02740.JPG",
   },
 ];
 // Mock Data Pengurus/Struktur
@@ -127,10 +192,31 @@ export default function App() {
   const [scrolled, setScrolled] = useState(false);
   const [activeTab, setActiveTab] = useState("home");
   const [currentMember, setCurrentMember] = useState(0);
+  const [user, setUser] = useState(null);
+  const [profileOpen, setProfileOpen] = useState(false);
+  const [prokerIndex, setProkerIndex] = useState(0);
+  const prokerSliderRef = useRef(null);
   const prevMember = () =>
     setCurrentMember((prev) => (prev - 1 + TEAM.length) % TEAM.length);
   const nextMember = () => setCurrentMember((prev) => (prev + 1) % TEAM.length);
+  // Proker Slider Logic
+  // Proker Slider Logic
+  const nextProker = () => {
+    if (prokerSliderRef.current) {
+      const cardWidth = prokerSliderRef.current.offsetWidth;
+      prokerSliderRef.current.scrollBy({ left: cardWidth, behavior: "smooth" });
+    }
+  };
 
+  const prevProker = () => {
+    if (prokerSliderRef.current) {
+      const cardWidth = prokerSliderRef.current.offsetWidth;
+      prokerSliderRef.current.scrollBy({
+        left: -cardWidth,
+        behavior: "smooth",
+      });
+    }
+  };
   // State untuk Toko
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
@@ -191,6 +277,84 @@ export default function App() {
     setOrderStep(1);
     setIsOrderModalOpen(true);
   };
+  // Detect scroll untuk efek header
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  // Load user data dari localStorage/sessionStorage
+  useEffect(() => {
+    const checkAuth = () => {
+      const storedUser =
+        localStorage.getItem("user") || sessionStorage.getItem("user");
+      const newUser = storedUser ? JSON.parse(storedUser) : null;
+
+      // Force update dengan membandingkan object
+      setUser((prev) => {
+        if (JSON.stringify(prev) !== JSON.stringify(newUser)) {
+          return newUser;
+        }
+        return prev;
+      });
+    };
+
+    // Initial check
+    checkAuth();
+
+    // Check when tab/window becomes visible
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        checkAuth();
+      }
+    };
+
+    // Check on pageshow (termasuk dari bfcache)
+    const handlePageShow = () => {
+      checkAuth();
+    };
+
+    // Listen to events
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    window.addEventListener("pageshow", handlePageShow);
+    window.addEventListener("storage", checkAuth);
+
+    // Disable bfcache dengan menambahkan unload listener
+    window.addEventListener("beforeunload", () => {
+      // Ini akan disable bfcache untuk halaman ini
+    });
+
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      window.removeEventListener("pageshow", handlePageShow);
+      window.removeEventListener("storage", checkAuth);
+    };
+  }, []);
+
+  // Handle logout
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    sessionStorage.removeItem("token");
+    sessionStorage.removeItem("user");
+    setUser(null);
+    setProfileOpen(false);
+    window.location.href = "/login";
+  };
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (!e.target.closest("[data-profile]")) {
+        setProfileOpen(false);
+      }
+    };
+    if (profileOpen) {
+      document.addEventListener("click", handleClickOutside);
+    }
+    return () => document.removeEventListener("click", handleClickOutside);
+  }, [profileOpen]);
 
   const handleNextStep = (e: React.FormEvent) => {
     e.preventDefault();
@@ -238,6 +402,7 @@ export default function App() {
                 : "bg-white/70 rounded-b-[40px] px-12 py-5 shadow-lg shadow-blue-900/5"
             }`}
         >
+          {/* Logo Section */}
           <div className="flex items-center gap-4">
             <img
               src="logo.png"
@@ -254,6 +419,8 @@ export default function App() {
               </span>
             </div>
           </div>
+
+          {/* Navigation Links */}
           <nav className="flex items-center gap-10 font-bold text-slate-600">
             {["home", "about", "shop", "proker"].map((item) => (
               <a
@@ -261,29 +428,101 @@ export default function App() {
                 href={`#${item}`}
                 onClick={() => setActiveTab(item)}
                 className={`relative transition-colors group text-sm uppercase tracking-wide
-  ${activeTab === item ? "text-blue-600" : "text-slate-600 hover:text-blue-600"}
-`}
+                  ${activeTab === item ? "text-blue-600" : "text-slate-600 hover:text-blue-600"}
+                `}
               >
                 {item === "proker"
                   ? "Program"
                   : item === "about"
-                    ? "Tentang Kami"
+                    ? "About"
                     : item === "shop"
-                      ? "Katalog"
-                      : "Beranda"}
+                      ? "Shop"
+                      : "Home"}
                 <span
                   className={`absolute -bottom-1 left-0 h-0.5 bg-blue-600 transition-all duration-300
-  ${activeTab === item ? "w-full" : "w-0 group-hover:w-full"}
-`}
-                />{" "}
+                    ${activeTab === item ? "w-full" : "w-0 group-hover:w-full"}
+                  `}
+                />
               </a>
             ))}
           </nav>
-          <button
-            className={`bg-gradient-to-r from-blue-600 to-indigo-700 hover:shadow-lg hover:shadow-blue-200 text-white rounded-full text-xs font-bold transition-all active:scale-95 ${scrolled ? "px-7 py-2.5" : "px-8 py-3"}`}
-          >
-            Daftar Pengurus
-          </button>
+
+          {/* Auth Section: Login Button OR Profile Dropdown */}
+          <div className="relative" data-profile>
+            {!user ? (
+              // Belum login: tampilkan tombol Daftar Pengurus
+              <button
+                onClick={() => (window.location.href = "/login")}
+                className={`bg-gradient-to-r from-blue-600 to-indigo-700 hover:shadow-lg hover:shadow-blue-200 text-white rounded-full text-xs font-bold transition-all active:scale-95 ${scrolled ? "px-7 py-2.5" : "px-8 py-3"}`}
+              >
+                Daftar Pengurus
+              </button>
+            ) : (
+              // Sudah login: tampilkan Profile Dropdown
+              <div className="relative">
+                <button
+                  onClick={() => setProfileOpen(!profileOpen)}
+                  className="flex items-center gap-2 px-4 py-2 rounded-full bg-slate-100 hover:bg-slate-200 transition-all border border-slate-200"
+                >
+                  <div>
+                    <User />
+                  </div>
+                  <span className="text-sm font-semibold text-slate-700 hidden xl:block">
+                    {user?.full_name || "Pengurus"}
+                  </span>
+                  <ChevronDown
+                    size={14}
+                    className={`text-slate-500 transition-transform ${profileOpen ? "rotate-180" : ""}`}
+                  />
+                </button>
+
+                {/* Dropdown Menu */}
+                {profileOpen && (
+                  <div className="absolute right-0 mt-2 w-52 bg-white rounded-2xl shadow-xl border border-slate-100 py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-200">
+                    {/* User Info Header */}
+                    <div className="px-4 py-3 border-b border-slate-100">
+                      <p className="font-bold text-sm text-slate-800 truncate">
+                        {user?.full_name || "Pengurus FOBI"}
+                      </p>
+                      <p className="text-xs text-slate-500">
+                        {user?.role || "Anggota"}
+                      </p>
+                    </div>
+
+                    {/* Menu Items */}
+                    <a
+                      href="/user/dashboard"
+                      className="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition-colors"
+                      onClick={() => setProfileOpen(false)}
+                    >
+                      <LayoutDashboard size={16} />
+                      Dashboard
+                    </a>
+                    <a
+                      href="/dashboard?tab=settings"
+                      className="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition-colors"
+                      onClick={() => setProfileOpen(false)}
+                    >
+                      <Settings size={16} />
+                      Pengaturan
+                    </a>
+
+                    {/* Divider */}
+                    <div className="my-2 border-t border-slate-100" />
+
+                    {/* Logout */}
+                    <button
+                      onClick={handleLogout}
+                      className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-slate-700 transition-colors"
+                    >
+                      <LogOut size={16} />
+                      Keluar
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
         </div>
       </header>
 
@@ -295,9 +534,68 @@ export default function App() {
             FOBI
           </span>
         </div>
+
+        {/* Mobile Profile / Login */}
+        <div className="relative" data-profile>
+          {!user ? (
+            <button
+              onClick={() => (window.location.href = "/login")}
+              className="text-xs font-bold text-blue-600 bg-blue-50 px-4 py-2 rounded-full"
+            >
+              Login
+            </button>
+          ) : (
+            <button
+              onClick={() => setProfileOpen(!profileOpen)}
+              className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold text-xs"
+            >
+              {user?.full_name.charAt(0).toUpperCase() || "U"}
+            </button>
+          )}
+
+          {/* Mobile Dropdown */}
+          {profileOpen && user && (
+            <div className="absolute right-0 mt-2 w-48 bg-white rounded-2xl shadow-xl border border-slate-100 py-2 z-50">
+              <div className="px-4 py-3 border-b border-slate-100">
+                <p className="font-bold text-sm text-slate-800 truncate">
+                  {user?.full_name}
+                </p>
+                <p className="text-xs text-slate-500">{user?.role}</p>
+              </div>
+              <a
+                href="/user/dashboard"
+                className="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-700 hover:bg-blue-50"
+                onClick={() => {
+                  setProfileOpen(false);
+                }}
+              >
+                <LayoutDashboard size={16} />
+                Dashboard
+              </a>
+              <a
+                href="/dashboard?tab=settings"
+                className="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-700 hover:bg-blue-50"
+                onClick={() => {
+                  setProfileOpen(false);
+                }}
+              >
+                <Settings size={16} />
+                Pengaturan
+              </a>
+              <div className="my-2 border-t border-slate-100" />
+              <button
+                onClick={handleLogout}
+                className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50"
+              >
+                <LogOut size={16} />
+                Keluar
+              </button>
+            </div>
+          )}
+        </div>
       </header>
 
-      {/* Mobile Nav */}
+      {/* Mobile Bottom Nav */}
       <nav className="fixed bottom-0 left-0 w-full z-50 px-4 pb-4 lg:hidden">
         <div className="bg-white/85 backdrop-blur-2xl border-t border-white/30 rounded-[24px] shadow-[0_-10px_40px_rgba(0,0,0,0.1)] flex justify-around items-center py-4 px-2">
           <a
@@ -306,7 +604,7 @@ export default function App() {
             className={`flex flex-col items-center gap-1 transition-colors ${activeTab === "home" ? "text-blue-600" : "text-slate-400"}`}
           >
             <Home className="w-5 h-5" />
-            <span className="text-[10px] font-bold">Beranda</span>
+            <span className="text-[10px] font-bold">Home</span>
           </a>
           <a
             href="#about"
@@ -314,16 +612,15 @@ export default function App() {
             className={`flex flex-col items-center gap-1 transition-colors ${activeTab === "about" ? "text-blue-600" : "text-slate-400"}`}
           >
             <Info className="w-5 h-5" />
-            <span className="text-[10px] font-bold">Tentang</span>
+            <span className="text-[10px] font-bold">About</span>
           </a>
-
           <a
             href="#shop"
             onClick={() => setActiveTab("shop")}
             className={`flex flex-col items-center gap-1 transition-colors ${activeTab === "shop" ? "text-blue-600" : "text-slate-400"}`}
           >
             <ShoppingBag className="w-5 h-5" />
-            <span className="text-[10px] font-bold">Katalog</span>
+            <span className="text-[10px] font-bold">Shop</span>
           </a>
         </div>
       </nav>
@@ -506,7 +803,7 @@ export default function App() {
         </div>
       </section>
 
-      {/* --- NEW: Katalog Produk Section --- */}
+      {/* --- NEW: Shop Produk Section --- */}
       <section id="shop" className="py-24 bg-white overflow-hidden">
         <div className="container mx-auto px-6">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-16 reveal opacity-0 translate-y-[30px] transition-all duration-1000">
@@ -579,9 +876,81 @@ export default function App() {
       </section>
 
       {/* Proker Section */}
-      <section id="proker" className="py-24 bg-slate-50">
+      {/* NEW: Kegiatan Sedang Dilaksanakan Section */}
+      <section
+        id="current-event"
+        className="py-24 bg-white border-y border-slate-100"
+      >
         <div className="container mx-auto px-6">
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-16 reveal opacity-0 translate-y-[30px] transition-all duration-1000">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-8 mb-16 reveal opacity-0 translate-y-[30px] transition-all">
+            <div className="max-w-2xl">
+              <h4 className="text-orange-500 font-black uppercase tracking-widest text-xs mb-4 flex items-center gap-2">
+                <span className="w-2 h-2 bg-orange-500 rounded-full animate-ping"></span>
+                PERHATIAN
+              </h4>
+              <h2 className="text-4xl font-black text-slate-800">
+                Kegiatan yang akan dilaksanakan
+              </h2>
+              <p className="text-slate-500 mt-2">
+                Jangan sampai ketinggalan, daftar sekarang sebelum kuota penuh!
+              </p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {CURRENT_EVENTS.map((event, i) => (
+              <div
+                key={event.id}
+                className="bg-slate-50 rounded-[3rem] overflow-hidden border border-slate-100 flex flex-col md:flex-row reveal opacity-0 translate-y-[30px] transition-all"
+                style={{ transitionDelay: `${i * 100}ms` }}
+              >
+                <div className="md:w-2/5 relative h-64 md:h-auto">
+                  <img
+                    src={event.img}
+                    className="w-full h-full object-cover"
+                    alt={event.name}
+                  />
+                  <div className="absolute top-4 left-4 bg-white/90 backdrop-blur px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest text-orange-600 shadow-sm">
+                    {event.price}
+                  </div>
+                </div>
+                <div className="p-8 md:w-3/5 space-y-4">
+                  <div className="space-y-2">
+                    <h3 className="text-2xl font-black text-slate-800 leading-tight">
+                      {event.name}
+                    </h3>
+                    <div className="flex flex-col gap-1 text-sm text-slate-500 font-medium">
+                      <div className="flex items-center gap-2">
+                        <Calendar size={14} className="text-blue-600" />{" "}
+                        {event.date}
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <MapPin size={14} className="text-blue-600" />{" "}
+                        {event.location}
+                      </div>
+                    </div>
+                  </div>
+                  <p className="text-slate-500 text-sm line-clamp-3">
+                    {event.description}
+                  </p>
+                  <a
+                    href="/login"
+                    className="inline-flex items-center gap-3 bg-blue-600 text-white px-8 py-3.5 rounded-2xl font-bold text-sm hover:bg-blue-700 hover:shadow-lg transition-all active:scale-95"
+                  >
+                    Detail Pendaftaran <ArrowRight size={18} />
+                  </a>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Proker Section (Slider Mode) */}
+      <section id="proker" className="py-24 bg-slate-50 overflow-hidden">
+        <div className="container mx-auto px-6 relative">
+          {/* Header Section */}
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-16">
             <div className="max-w-xl">
               <h4 className="text-blue-600 font-black uppercase tracking-widest text-xs mb-4">
                 Eksplorasi Program
@@ -590,74 +959,88 @@ export default function App() {
                 Agenda Kerja Aktif Kami
               </h2>
             </div>
-            <a
-              href="#"
-              className="text-blue-600 font-bold flex items-center gap-2 hover:translate-x-2 transition-transform group"
-            >
-              Semua Program <ArrowRight className="w-5 h-5" />
-            </a>
+
+            {/* Desktop Navigation (Pojok Atas - Optional, tapi saya buatkan yang melayang di samping) */}
           </div>
-          <div className="grid md:grid-cols-3 gap-10">
-            {[
-              {
-                title: "GATHPOS",
-                tag: "Learning Center",
-                deskripsi:
-                  "Inti Acara: Sebuah ajang pertemuan strategis yang dirancang khusus untuk seluruh pengurus OSIS aktif se-Kota Banjar.Fokus Utama: Memperkuat jaringan kerja sama (kolaborasi) dan mempererat hubungan personal antar organisasi siswa di berbagai tingkatan sekolah.  ",
-                color: "bg-green-400",
-                img: "DSC02375.JPG",
-              },
-              {
-                title:
-                  "FRAME (Festival of Remarkable Art and Media Expression)",
-                tag: "Media Center",
-                deskripsi:
-                  "FRAME adalah festival media dan seni kreatif tahunan yang diselenggarakan untuk menampilkan dan mengapresiasi karya-karya terbaik yang dihasilkan oleh pelajar di seluruh Kota Banjar",
-                color: "bg-blue-400",
-                img: "DSC02740.JPG",
-              },
-              {
-                title: "GAPURA",
-                tag: "Sosial Center",
-                deskripsi:
-                  "Program pengabdian sosial yang dirancang seperti Kuliah Kerja Nyata (KKN) skala mini.",
-                color: "bg-yellow-400",
-                img: "DSC02313.JPG",
-              },
-            ].map((item, i) => (
-              <div
-                key={i}
-                className="bg-white/70 backdrop-blur-md border border-white/50 rounded-[3rem] p-4 group reveal opacity-0 translate-y-[30px] transition-all duration-1000"
-                style={{ transitionDelay: `${i * 150}ms` }}
-              >
-                <div className="relative h-64 overflow-hidden rounded-[2.5rem] mb-6">
-                  <img
-                    src={item.img}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                    alt={item.title}
-                  />
-                  <div className="absolute bottom-4 left-4 right-4 flex justify-between items-center bg-white/20 backdrop-blur-md p-3 rounded-2xl border border-white/30">
-                    <span className="text-[10px] font-black text-white uppercase tracking-tighter">
-                      {item.tag}
-                    </span>
-                    <span
-                      className={`${item.color} w-2 h-2 rounded-full animate-pulse`}
-                    ></span>
+
+          {/* Wrapper untuk navigasi melayang (Luxury Style) */}
+          <div className="relative group">
+            {/* Tombol Navigasi Melayang Kiri (Desktop Only) */}
+            <button
+              onClick={prevProker}
+              className="absolute -left-4 top-1/2 -translate-y-1/2 z-20 w-14 h-14 rounded-full bg-blue-700 shadow-xl border border-slate-100 hidden md:flex items-center justify-center hover:bg-blue-600 hover:text-white transition-all transform hover:scale-110 active:scale-95 group-hover:opacity-100 opacity-0"
+            >
+              <ChevronLeft className="w-6 h-6" />
+            </button>
+
+            {/* Tombol Navigasi Melayang Kanan (Desktop Only) */}
+            <button
+              onClick={nextProker}
+              className="absolute -right-4 top-1/2 -translate-y-1/2 z-20 w-14 h-14 rounded-full bg-blue-700 shadow-xl border border-slate-100 hidden md:flex items-center justify-center hover:bg-blue-600 hover:text-white transition-all transform hover:scale-110 active:scale-95 group-hover:opacity-100 opacity-0"
+            >
+              <ChevronRight className="w-6 h-6" />
+            </button>
+
+            {/* Slider Content */}
+            <div
+              ref={prokerSliderRef}
+              className="flex gap-8 overflow-x-auto snap-x snap-mandatory scrollbar-hide pb-8 px-2"
+              style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+            >
+              {PROKER_DATA.map((item, i) => (
+                <div
+                  key={i}
+                  className="min-w-full md:min-w-[400px] snap-center bg-white border border-slate-100 rounded-[3rem] p-4 group transition-all hover:shadow-2xl"
+                >
+                  <div className="relative h-64 overflow-hidden rounded-[2.5rem] mb-6">
+                    <img
+                      src={item.img}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                      alt={item.title}
+                      // onerror={(e) => {
+                      //   e.target.src =
+                      //     "https://via.placeholder.com/800x600?text=FOBI+Program";
+                      // }}
+                    />
+                    <div className="absolute bottom-4 left-4 right-4 flex justify-between items-center bg-white/20 backdrop-blur-md p-3 rounded-2xl border border-white/30">
+                      <span className="text-[10px] font-black text-white uppercase tracking-tighter">
+                        {item.tag}
+                      </span>
+                      <span
+                        className={`${item.color} w-2 h-2 rounded-full animate-pulse`}
+                      ></span>
+                    </div>
+                  </div>
+                  <div className="px-4 pb-4">
+                    <h3 className="text-xl font-black text-slate-800 mb-3 uppercase tracking-tighter">
+                      {item.title}
+                    </h3>
+                    <p className="text-slate-500 text-sm leading-relaxed line-clamp-3">
+                      {item.deskripsi}
+                    </p>
+                    <div className="mt-6 flex items-center gap-2 text-blue-600 font-bold text-xs uppercase tracking-widest cursor-pointer hover:gap-3 transition-all">
+                      <Calendar className="w-4 h-4" /> Detail Kegiatan
+                    </div>
                   </div>
                 </div>
-                <div className="px-4 pb-4">
-                  <h3 className="text-xl font-black text-slate-800 mb-3 uppercase tracking-tighter">
-                    {item.title}
-                  </h3>
-                  <p className="text-slate-500 text-sm leading-relaxed">
-                    {item.deskripsi}
-                  </p>
-                  <div className="mt-6 flex items-center gap-2 text-blue-600 font-bold text-xs uppercase tracking-widest">
-                    <Calendar className="w-4 h-4" /> Detail Kegiatan
-                  </div>
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
+          </div>
+
+          {/* Mobile Navigation (Bawah) - Biar jempol friendly di HP */}
+          <div className="flex justify-center gap-4 mt-8 md:hidden">
+            <button
+              onClick={prevProker}
+              className="w-14 h-14 rounded-2xl bg-white border border-slate-200 flex items-center justify-center shadow-md active:bg-blue-600 active:text-white transition-all"
+            >
+              <ChevronLeft className="w-6 h-6" />
+            </button>
+            <button
+              onClick={nextProker}
+              className="w-14 h-14 rounded-2xl bg-white border border-slate-200 flex items-center justify-center shadow-md active:bg-blue-600 active:text-white transition-all"
+            >
+              <ChevronRight className="w-6 h-6" />
+            </button>
           </div>
         </div>
       </section>
