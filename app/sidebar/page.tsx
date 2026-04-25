@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { useRouter, usePathname } from "next/navigation"; // ✅ Import router & pathname
+import { useRouter, usePathname } from "next/navigation";
 import { useMemo } from "react";
 
 import {
@@ -21,7 +21,12 @@ import {
 } from "lucide-react";
 import toast from "react-hot-toast";
 
-export default function SideBar() {
+// ➕ Tambahkan interface props untuk onToggle callback
+type SideBarProps = {
+  onToggle?: (open: boolean) => void;
+};
+
+export default function SideBar({ onToggle }: SideBarProps) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [user, setUser] = useState<User | null>(null);
@@ -30,14 +35,15 @@ export default function SideBar() {
     role?: string;
     name?: string;
   };
-  const router = useRouter(); // ✅ Inisialisasi router
-  const pathname = usePathname(); // ✅ Untuk sinkronisasi active menu dengan URL
-  // Sidebar menu items (with role check)
+  const router = useRouter();
+  const pathname = usePathname();
+
   const menuItems = useMemo(() => {
     if (user?.role === "admin") {
       return [
         { id: "sistem", label: "Sistem", icon: Home, path: "/admin/dashboard" },
         { id: "event", label: "Event", icon: Bell, path: "/admin/proker" },
+        { id: "member", label: "Pengurus", icon: Users, path: "/admin/member" },
       ];
     }
 
@@ -70,6 +76,7 @@ export default function SideBar() {
       { id: "help", label: "Bantuan", icon: HelpCircle, path: "/help" },
     ];
   }, [user]);
+
   useEffect(() => {
     const storedUser =
       localStorage.getItem("user") || sessionStorage.getItem("user");
@@ -96,7 +103,7 @@ export default function SideBar() {
     router.push(path);
     setMobileMenuOpen(false);
   };
-  // Handle logout
+
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
@@ -104,11 +111,10 @@ export default function SideBar() {
     sessionStorage.removeItem("user");
     toast.success("Berhasil keluar!");
     setTimeout(() => {
-      router.push("/"); // ✅ Pakai router.push untuk logout
+      router.push("/");
     }, 1000);
   };
 
-  // Stats data for dashboard
   const stats = [
     {
       label: "Total Anggota",
@@ -140,7 +146,6 @@ export default function SideBar() {
     },
   ];
 
-  // Recent activities
   const activities = [
     {
       id: 1,
@@ -171,6 +176,13 @@ export default function SideBar() {
       avatar: "DL",
     },
   ];
+
+  // ➕ Helper function untuk update state + notify parent
+  const toggleSidebar = () => {
+    const newState = !sidebarOpen;
+    setSidebarOpen(newState);
+    onToggle?.(newState); // ✅ Kirim state terbaru ke parent
+  };
 
   return (
     <div
@@ -228,9 +240,10 @@ export default function SideBar() {
               className="w-10 h-10 object-contain drop-shadow-md"
             />
           )}
+          {/* ➕ Gunakan toggleSidebar agar parent juga terupdate */}
           <button
             onClick={() => {
-              setSidebarOpen(!sidebarOpen);
+              toggleSidebar();
               setMobileMenuOpen(false);
             }}
             className="p-2 rounded-xl transition-all hover:bg-slate-100 text-slate-500 hidden lg:flex"

@@ -132,7 +132,6 @@ const TEAM = [
 export default function App() {
   const [scrolled, setScrolled] = useState(false);
   const [activeTab, setActiveTab] = useState("home");
-  const [currentMember, setCurrentMember] = useState(0);
   const [profileOpen, setProfileOpen] = useState(false);
   const [prokerIndex, setProkerIndex] = useState(0);
   const [ongoingProkers, setOngoingProkers] = useState<any[]>([]);
@@ -144,6 +143,9 @@ export default function App() {
   const [orderStep, setOrderStep] = useState(1);
   const [prokers, setProkers] = useState<any[]>([]);
   const [loadingProker, setLoadingProker] = useState(true);
+  const [members, setMembers] = useState<any[]>([]);
+  const [currentMember, setCurrentMember] = useState(0);
+  const FILE_URL = "https://hmcf55cz-5000.asse.devtunnels.ms";
 
   const API = axios.create({
     baseURL: "https://hmcf55cz-5000.asse.devtunnels.ms/api",
@@ -183,6 +185,20 @@ export default function App() {
       setLoadingProker(false);
     }
   };
+
+  const fetchMembers = async () => {
+    try {
+      const res = await API.get("/board?is_active=true");
+      let data = res.data.members;
+
+      // optional sorting
+      data = data.sort((a: any, b: any) => a.sort_order - b.sort_order);
+
+      setMembers(data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
   const fetchOngoingProkers = async () => {
     try {
       setLoadingOngoing(true);
@@ -213,6 +229,7 @@ export default function App() {
   useEffect(() => {
     fetchProkers();
     fetchOngoingProkers();
+    fetchMembers();
   }, []);
   const [orderData, setOrderData] = useState({
     name: "",
@@ -233,9 +250,15 @@ export default function App() {
   };
 
   const [user, setUser] = useState<User | null>(null);
+  const nextMember = () =>
+    setCurrentMember((prev) =>
+      members.length ? (prev + 1) % members.length : 0,
+    );
+
   const prevMember = () =>
-    setCurrentMember((prev) => (prev - 1 + TEAM.length) % TEAM.length);
-  const nextMember = () => setCurrentMember((prev) => (prev + 1) % TEAM.length);
+    setCurrentMember((prev) =>
+      members.length ? (prev - 1 + members.length) % members.length : 0,
+    );
 
   const prevProker = () => {
     if (prokerSliderRef.current) {
@@ -765,40 +788,51 @@ export default function App() {
                   </h4>
                 </div>
 
-                <div className="flex items-center gap-6">
-                  <div className="w-16 h-16 rounded-2xl overflow-hidden shrink-0 border-2 border-white shadow-md">
-                    <img
-                      src={TEAM[currentMember].img}
-                      className="w-full h-full object-cover"
-                      alt="Member"
-                    />
+                {members.length > 0 && (
+                  <div className="flex items-center gap-6">
+                    <div className="w-16 h-16 rounded-2xl overflow-hidden shrink-0 border-2 border-white shadow-md">
+                      <img
+                        src={
+                          members[currentMember].photo_url
+                            ? `${FILE_URL}${members[currentMember].photo_url}`
+                            : "/no-image.png"
+                        }
+                        className="w-full h-full object-cover"
+                        alt="Member"
+                      />
+                    </div>
+
+                    <div className="flex-1">
+                      <h5 className="font-black text-slate-800 leading-none mb-1">
+                        {members[currentMember].full_name}
+                      </h5>
+
+                      <p className="text-xs font-bold text-blue-600 uppercase tracking-tighter">
+                        {members[currentMember].position}
+                      </p>
+
+                      <p className="text-xs font-bold text-black uppercase tracking-tighter">
+                        {members[currentMember].division}
+                      </p>
+                    </div>
+
+                    <div className="flex gap-1">
+                      <button
+                        onClick={prevMember}
+                        className="w-8 h-8 rounded-full bg-blue-700 flex items-center justify-center"
+                      >
+                        <ChevronLeft className="w-4 h-4" />
+                      </button>
+
+                      <button
+                        onClick={nextMember}
+                        className="w-8 h-8 rounded-full bg-blue-700 flex items-center justify-center"
+                      >
+                        <ChevronRight className="w-4 h-4" />
+                      </button>
+                    </div>
                   </div>
-                  <div className="flex-1">
-                    <h5 className="font-black text-slate-800 leading-none mb-1">
-                      {TEAM[currentMember].name}
-                    </h5>
-                    <p className="text-xs font-bold text-blue-600 uppercase tracking-tighter">
-                      {TEAM[currentMember].role}
-                    </p>
-                    <p className="text-xs font-bold text-black uppercase tracking-tighter">
-                      {TEAM[currentMember].sekolah}
-                    </p>
-                  </div>
-                  <div className="flex gap-1">
-                    <button
-                      onClick={prevMember}
-                      className="w-8 h-8 rounded-full bg-blue-700 shadow-sm border border-slate-100 flex items-center justify-center hover:bg-blue-600 hover:text-white transition-all"
-                    >
-                      <ChevronLeft className="w-4 h-4" />
-                    </button>
-                    <button
-                      onClick={nextMember}
-                      className="w-8 h-8 rounded-full bg-blue-700 shadow-sm border border-slate-100 flex items-center justify-center hover:bg-blue-600 hover:text-white transition-all"
-                    >
-                      <ChevronRight className="w-4 h-4" />
-                    </button>
-                  </div>
-                </div>
+                )}
               </div>
 
               <div className="flex items-center gap-4 p-5 rounded-3xl bg-blue-50 border border-blue-100">
