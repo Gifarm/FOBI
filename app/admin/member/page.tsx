@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { toast } from "react-hot-toast"; // ✅ Import react-hot-toast
 import SideBar from "../../sidebar/page";
 import {
   Plus,
@@ -33,11 +35,12 @@ type Member = {
 };
 
 export default function MemberAdmin() {
+  const router = useRouter();
   const [members, setMembers] = useState<Member[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
 
-  // ➕ State untuk sinkronisasi posisi sidebar (hanya untuk layout)
+  // State untuk sinkronisasi posisi sidebar
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
   const getToken = () => {
@@ -58,6 +61,7 @@ export default function MemberAdmin() {
       setMembers(data);
     } catch (err) {
       console.error("Error fetch members:", err);
+      toast.error("Gagal memuat data");
     } finally {
       setLoading(false);
     }
@@ -72,7 +76,7 @@ export default function MemberAdmin() {
 
     const token = getToken();
     if (!token) {
-      alert("Session habis, silakan login ulang");
+      toast.error("Session habis, silakan login ulang");
       return;
     }
 
@@ -82,8 +86,9 @@ export default function MemberAdmin() {
           Authorization: `Bearer ${token}`,
         },
       });
-      toast.success("Data berhasil dihapus");
+      toast.success("Data berhasil dihapus"); // ✅ Tanpa emoji, clean & profesional
       fetchMembers();
+      router.refresh(); // ✅ Refresh data agar tabel otomatis update
     } catch (err: any) {
       console.error("Error delete:", err?.response?.data || err.message);
       toast.error("Gagal menghapus data");
@@ -97,12 +102,6 @@ export default function MemberAdmin() {
       .includes(searchQuery.toLowerCase()),
   );
 
-  // Simple toast helper
-  const toast = {
-    success: (msg: string) => alert(`✅ ${msg}`),
-    error: (msg: string) => alert(`❌ ${msg}`),
-  };
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/20">
       {/* Background Decor - Blur Effects */}
@@ -113,12 +112,10 @@ export default function MemberAdmin() {
       </div>
 
       <div className="relative z-10 flex">
-        {/* ➕ Pass callback agar MemberAdmin bisa track state sidebar untuk layout */}
+        {/* Sidebar dengan callback sync */}
         <SideBar onToggle={(open: boolean) => setSidebarOpen(open)} />
 
         {/* Main Content */}
-        {/* ➕ Perbaikan: transition margin lebih smooth + will-change untuk performa */}
-        {/* Sidebar width: closed = 80px (w-20), open = 288px (w-72) */}
         <main
           className={`flex-1 p-4 md:p-8 lg:p-10 transition-[margin] duration-300 ease-in-out will-change-[margin] ${
             sidebarOpen ? "lg:ml-[288px]" : "lg:ml-[80px]"

@@ -90,7 +90,8 @@ export default function SideBar({ onToggle }: SideBarProps) {
     const currentPath = pathname || "/";
     const activeItem = menuItems.find(
       (item) =>
-        item.path === currentPath ||
+        currentPath === item.path ||
+        currentPath.startsWith(item.path + "/") || // ✅ Ini kuncinya!
         (item.path === "/dashboard" && currentPath === "/"),
     );
     if (activeItem) {
