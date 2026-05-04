@@ -44,6 +44,18 @@ export default function SideBar({ onToggle }: SideBarProps) {
         { id: "sistem", label: "Sistem", icon: Home, path: "/admin/dashboard" },
         { id: "event", label: "Event", icon: Bell, path: "/admin/proker" },
         { id: "member", label: "Pengurus", icon: Users, path: "/admin/member" },
+        {
+          id: "struktur",
+          label: "Struktur",
+          icon: Users,
+          path: "/admin/struktur",
+        },
+        {
+          id: "batch",
+          label: "Batch",
+          icon: Users,
+          path: "/admin/batch",
+        },
       ];
     }
 
@@ -95,6 +107,7 @@ export default function SideBar({ onToggle }: SideBarProps) {
         (item.path === "/dashboard" && currentPath === "/"),
     );
     if (activeItem) {
+      // eslint-disable-next-line react-hooks/immutability
       setActiveMenu(activeItem.id);
     }
   }, [pathname, menuItems]);
